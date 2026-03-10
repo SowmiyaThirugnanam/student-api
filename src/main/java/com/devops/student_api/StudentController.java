@@ -14,6 +14,7 @@ public class StudentController {
         studentList.add(new Student(1, "Sowmiya", "DevOps"));
         studentList.add(new Student(2, "Rahul", "Java Backend"));
         studentList.add(new Student(3, "Priya", "Cloud Engineering"));
+        studentList.add(new Student(4, "Banu", "Release Engineering"));
     }
 
     @GetMapping
