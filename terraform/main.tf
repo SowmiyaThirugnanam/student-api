@@ -2,8 +2,8 @@ provider "aws" {
   region = var.region
 }
 
-# Security Group - controls traffic in and out
-resource "aws_security_group" "student_api_sg-v2" {
+# Security Group
+resource "aws_security_group" "student_api_sg" {
   name        = "student-api-sg-v2"
   description = "Allow HTTP and SSH traffic"
 
@@ -32,30 +32,31 @@ resource "aws_security_group" "student_api_sg-v2" {
   }
 }
 
-resource "aws_iam_role" "ec2_ssm_role-v2" {
+# IAM Role
+resource "aws_iam_role" "ec2_ssm_role" {
   name = "ec2-ssm-role-v2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
       }
-    ]
+    }]
   })
 }
 
+# Attach SSM Policy
 resource "aws_iam_role_policy_attachment" "ssm_policy" {
   role       = aws_iam_role.ec2_ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# Instance Profile
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "ec2-ssm-profile"
+  name = "ec2-ssm-profile-v2"
   role = aws_iam_role.ec2_ssm_role.name
 }
 
@@ -78,8 +79,7 @@ resource "aws_instance" "student_api" {
     snap install amazon-ssm-agent --classic
     systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
     systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
-    
-    # Pull and run Docker image
+
     docker pull ${var.dockerhub_username}/student-api:latest
     docker run -d -p 8080:8080 ${var.dockerhub_username}/student-api:latest
   EOF
