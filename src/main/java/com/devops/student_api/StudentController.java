@@ -23,6 +23,8 @@ public class StudentController {
         studentList.add(new Student(3, "Priya", "Cloud Engineering"));
         studentList.add(new Student(4, "Banu", "Release Engineering"));
         studentList.add(new Student(4, "Ram", "QA"));
+        studentList.add(new Student(4, "Jai", "Developer"));
+        
     }
 
     @GetMapping
