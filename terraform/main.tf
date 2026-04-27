@@ -3,8 +3,8 @@ provider "aws" {
 }
 
 # Security Group - controls traffic in and out
-resource "aws_security_group" "student_api_sg" {
-  name        = "student-api-sg"
+resource "aws_security_group" "student_api_sg-v2" {
+  name        = "student-api-sg-v2"
   description = "Allow HTTP and SSH traffic"
 
   ingress {
@@ -32,8 +32,8 @@ resource "aws_security_group" "student_api_sg" {
   }
 }
 
-resource "aws_iam_role" "ec2_ssm_role" {
-  name = "ec2-ssm-role"
+resource "aws_iam_role" "ec2_ssm_role-v2" {
+  name = "ec2-ssm-role-v2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
