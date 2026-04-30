@@ -4,7 +4,7 @@ provider "aws" {
 
 # Security Group
 resource "aws_security_group" "student_api_sg" {
-  name        = "student-api-sg-v2"
+  name        = "student-api-sg-v3"
   description = "Allow HTTP and SSH traffic"
 
   ingress {
@@ -34,7 +34,7 @@ resource "aws_security_group" "student_api_sg" {
 
 # IAM Role
 resource "aws_iam_role" "ec2_ssm_role" {
-  name = "ec2-ssm-role-v2"
+  name = "ec2-ssm-role-v3"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -56,7 +56,7 @@ resource "aws_iam_role_policy_attachment" "ssm_policy" {
 
 # Instance Profile
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "ec2-ssm-profile-v2"
+  name = "ec2-ssm-profile-v3"
   role = aws_iam_role.ec2_ssm_role.name
 }
 
@@ -79,7 +79,8 @@ resource "aws_instance" "student_api" {
     snap install amazon-ssm-agent --classic
     systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
     systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
-
+    
+    # Pull and run Docker image
     docker pull ${var.dockerhub_username}/student-api:latest
     docker run -d -p 8080:8080 ${var.dockerhub_username}/student-api:latest
   EOF
