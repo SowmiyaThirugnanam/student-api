@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
+  login-dockerhub:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,6 +19,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+  build-docker-image:
+    runs-on: ubuntu-latest
+     
+    steps:
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/student-api:latest .
@@ -27,6 +31,10 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/student-api:latest
 
+  terraform-init:
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -37,15 +45,46 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+  terraform-plan:
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -out=tfplan     
         working-directory: ./terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}    
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}} 
+
+      - name: Upload Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: ./terraform/tfplan 
+  
+  terraform-show:
+    needs : terraform-plan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Terraform show
+        run: terraform show tfplan
+        working-directory: ./terraform
+        
+  terraform-apply:
+    needs: terraform-plan
+    runs-on: ubuntu-latest
+    environment: prod  
+     
+    steps:
+      - name: Download Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: ./terraform
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
         working-directory: ./terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
