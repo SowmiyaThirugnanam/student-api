@@ -30,6 +30,7 @@ jobs:
 
 
   terraform-plan:
+    needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
