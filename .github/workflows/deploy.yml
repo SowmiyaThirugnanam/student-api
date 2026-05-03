@@ -41,6 +41,9 @@ jobs:
 
       - run: terraform plan -out=tfplan
         working-directory: ./terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - run: terraform show tfplan
         working-directory: ./terraform
@@ -55,7 +58,7 @@ jobs:
     needs: terraform-plan
     runs-on: ubuntu-latest
     environment: prod   
-    
+
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -66,3 +69,6 @@ jobs:
 
       - run: terraform apply -auto-approve tfplan
         working-directory: ./terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
