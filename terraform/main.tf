@@ -4,7 +4,7 @@ provider "aws" {
 
 # Security Group
 resource "aws_security_group" "student_api_sg" {
-  name        = "student-api-sg-v3"
+  name        = "student-api-sg-v4"
   description = "Allow HTTP and SSH traffic"
 
   ingress {
@@ -34,7 +34,7 @@ resource "aws_security_group" "student_api_sg" {
 
 # IAM Role
 resource "aws_iam_role" "ec2_ssm_role" {
-  name = "ec2-ssm-role-v3"
+  name = "ec2-ssm-role-v4"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -56,7 +56,7 @@ resource "aws_iam_role_policy_attachment" "ssm_policy" {
 
 # Instance Profile
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "ec2-ssm-profile-v3"
+  name = "ec2-ssm-profile-v4"
   role = aws_iam_role.ec2_ssm_role.name
 }
 

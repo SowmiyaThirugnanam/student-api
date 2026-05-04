@@ -64,6 +64,9 @@ jobs:
     environment: prod   
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Download Terraform Plan Artifact
         uses: actions/download-artifact@v4
         with:
